@@ -25,7 +25,6 @@ void ActronAirKeypad::setup() {
 }
 
 void ActronAirKeypad::loop() {
-  ESP_LOGD(TAG, "Looping");
   ledProto.mloop();
 
   if (ledProto.newdata) {

@@ -91,7 +91,6 @@ float LedProtocol::get_display_value() {
 }
 
 void LedProtocol::mloop() {
-  ESP_LOGD(TAG, "mloop running");
   unsigned long now = micros();
   if (do_work_) {
     ESP_LOGD(TAG, "Processing data");
@@ -101,9 +100,7 @@ void LedProtocol::mloop() {
     return;
   }
 
-  ESP_LOGD(TAG, "Checking for new data");
   unsigned long dt = now - last_work_;
-  ESP_LOGD(TAG, "dt=%lu nlow_=%d", dt, nlow_);
   if (dt > 40000 && nlow_) {
     ESP_LOGD(TAG, "Finalizing data");
     nbits_ = nlow_;
@@ -120,7 +117,6 @@ void LedProtocol::mloop() {
     }
     last_work_ = now;
   }
-  ESP_LOGD(TAG, "mloop done");
 }
 
 } // namespace actron_air_keypad
