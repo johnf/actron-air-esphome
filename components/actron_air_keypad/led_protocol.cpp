@@ -12,7 +12,6 @@ static const char *const TAG = "actron_air_keypad";
 LedProtocol ledProto;
 
 void IRAM_ATTR LedProtocol::handle_interrupt() {
-  ESP_LOGD(TAG, "Interrupt received");
   auto nowu = micros();
   unsigned long dtu = nowu - last_intr_us_;
   last_intr_us_ = nowu;
@@ -34,7 +33,6 @@ void IRAM_ATTR LedProtocol::handle_interrupt() {
     nlow_ = nlow_ + 1;
     do_work_ = 1;
   }
-  ESP_LOGD(TAG, "Interrupt processing done");
 }
 
 char LedProtocol::decode_digit(uint8_t hex_value) {
