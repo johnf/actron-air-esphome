@@ -102,9 +102,7 @@ void LedProtocol::mloop() {
     nbits_ = nlow_;
     nlow_ = 0;
     if (nbits_ == 40 && !data_error_) {
-      ESP_LOGD(TAG, "40 bits received");
       if (memcmp(p, pulse_vec_, sizeof p) != 0) {
-        ESP_LOGD(TAG, "Data changed");
         newdata = true;
         memcpy(p, pulse_vec_, sizeof p);
       }
