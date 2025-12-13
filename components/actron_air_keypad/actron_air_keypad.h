@@ -63,7 +63,7 @@ public:
     this->timer_ = sensor;
   }
   void set_filter_sensor(binary_sensor::BinarySensor *sensor) {
-    this->timer_ = sensor;
+    this->filter_ = sensor;
   }
   void set_zone1_sensor(binary_sensor::BinarySensor *sensor) {
     this->zone1_ = sensor;

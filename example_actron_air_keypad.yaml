@@ -322,7 +322,7 @@ binary_sensor:
       icon: mdi:run
       id: run
     timer:
-      name: "timer"
+      name: "Timer"
       id: timer
     filter:
       name: "Filter"
