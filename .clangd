@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-I../../cdeps/esphome-repo, -I../../cdeps/ArduinoJson/src, -std=c++20]
