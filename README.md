@@ -117,13 +117,13 @@ text_sensor:
 ### Numeric Sensors (`sensor` platform)
 
 - `setpoint_temp` - Temperature from 7-segment display (°C)
-- `bit_count` - Error counter for monitoring
+- `error_count` - Error counter for monitoring
 
 ### Status Sensors (`binary_sensor` platform)
 
 - **Mode**: `cool`, `heat`, `auto`, `run`
 - **Fan**: `fan_hi`, `fan_mid`, `fan_low`, `fan_cont`
-- **Zones**: `zone1` through `zone8`
+- **Zones**: `zone1` through `zone7`
 - **Other**: `inside`, `timer`
 
 ### Debug Sensors (`text_sensor` platform)
@@ -131,6 +131,22 @@ text_sensor:
 - `bit_string` - Raw 40-bit pulse train (internal use)
 
 ## How It Works
+
+### Wires
+
+There are 4 wires inside the wall unit that connect to the main supply:
+
+- SENS - sensor line is directly connected to a thermistor
+- KEY - connected to the keypad, it changes resistance to a different value
+  when keys are pressed. This drops the voltage from 5V to different levels
+- COMM - ground
+- POWER - 19V and also data line that gets shifted into the LED. The protocol
+  in this wire is quite simple: Data is transmitted every 200ms or so. It starts
+  with a 16V->0V transition, followed by 41 other pulses, a zero or a one is
+  determined by the time between the pulses. Each value is then shifted through
+  the leds in the board.
+
+### Pulse Train Decoding
 
 1. An interrupt handler captures falling edges on the ADC pin
 2. Timing between edges determines if the pulse represents a '0' or '1'
@@ -144,7 +160,7 @@ text_sensor:
 
 - Check ADC pin connection
 - Verify pulse train voltage levels
-- Monitor `bit_count` sensor for errors
+- Monitor `error_count` sensor for errors
 
 ### Incorrect temperature readings
 
@@ -169,3 +185,13 @@ text_sensor:
 ## 📄 License
 
 MIT License - Feel free to use and modify
+
+## Thanks
+
+This builds on the work many others:
+
+- <https://community.home-assistant.io/t/actron-aircon-esp32-controller-help/609062>
+- <https://github.com/kursancew/actron-air-wifi>
+- <https://github.com/brentk7/Actron-Keypad>
+- <https://github.com/cjd/Actron-Keypad>
+- <https://github.com/LaughingLogic/Actron-Keypad>

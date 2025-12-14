@@ -11,25 +11,31 @@
 namespace esphome {
 namespace actron_air_keypad {
 
+/// ESPHome component that decodes Actron Air keypad display data.
+///
+/// Captures a pulse train from the keypad's display wire and decodes it to
+/// extract temperature setpoint, mode indicators, fan speeds, and zone states.
+/// Requires an InternalGPIOPin for interrupt-based pulse capture.
 class ActronAirKeypad : public Component {
 public:
+  ActronAirKeypad() = default;
+  ~ActronAirKeypad();
+
+  // Delete copy operations
+  ActronAirKeypad(const ActronAirKeypad &) = delete;
+  ActronAirKeypad &operator=(const ActronAirKeypad &) = delete;
+
   void setup() override;
   void loop() override;
   void dump_config() override;
+  float get_setup_priority() const override { return setup_priority::IO; }
 
   static void handle_interrupt(ActronAirKeypad *arg);
 
   void set_pin(GPIOPin *pin) { this->pin_ = pin; }
 
-  void set_bit_string_sensor(text_sensor::TextSensor *sensor) {
-    this->bit_string_ = sensor;
-  }
-
   void set_setpoint_temp_sensor(sensor::Sensor *sensor) {
     this->setpoint_temp_ = sensor;
-  }
-  void set_bit_count_sensor(sensor::Sensor *sensor) {
-    this->bit_count_ = sensor;
   }
 
   void set_room_sensor(binary_sensor::BinarySensor *sensor) {
@@ -62,8 +68,8 @@ public:
   void set_timer_sensor(binary_sensor::BinarySensor *sensor) {
     this->timer_ = sensor;
   }
-  void set_filter_sensor(binary_sensor::BinarySensor *sensor) {
-    this->filter_ = sensor;
+  void set_inside_sensor(binary_sensor::BinarySensor *sensor) {
+    this->inside_ = sensor;
   }
   void set_zone1_sensor(binary_sensor::BinarySensor *sensor) {
     this->zone1_ = sensor;
@@ -86,18 +92,18 @@ public:
   void set_zone7_sensor(binary_sensor::BinarySensor *sensor) {
     this->zone7_ = sensor;
   }
-  void set_zone8_sensor(binary_sensor::BinarySensor *sensor) {
-    this->zone8_ = sensor;
+
+  void set_bit_string_sensor(text_sensor::TextSensor *sensor) {
+    this->bit_string_ = sensor;
+  }
+  void set_error_count_sensor(sensor::Sensor *sensor) {
+    this->error_count_ = sensor;
   }
 
-  float get_setup_priority() const override { return setup_priority::IO; }
-
 protected:
-  GPIOPin *pin_;
+  GPIOPin *pin_{nullptr};
+  LedProtocol led_protocol_;
 
-  text_sensor::TextSensor *bit_string_{nullptr};
-
-  sensor::Sensor *bit_count_{nullptr};
   sensor::Sensor *setpoint_temp_{nullptr};
 
   binary_sensor::BinarySensor *room_{nullptr};
@@ -110,7 +116,7 @@ protected:
   binary_sensor::BinarySensor *heat_{nullptr};
   binary_sensor::BinarySensor *run_{nullptr};
   binary_sensor::BinarySensor *timer_{nullptr};
-  binary_sensor::BinarySensor *filter_{nullptr};
+  binary_sensor::BinarySensor *inside_{nullptr};
   binary_sensor::BinarySensor *zone1_{nullptr};
   binary_sensor::BinarySensor *zone2_{nullptr};
   binary_sensor::BinarySensor *zone3_{nullptr};
@@ -118,7 +124,9 @@ protected:
   binary_sensor::BinarySensor *zone5_{nullptr};
   binary_sensor::BinarySensor *zone6_{nullptr};
   binary_sensor::BinarySensor *zone7_{nullptr};
-  binary_sensor::BinarySensor *zone8_{nullptr};
+
+  text_sensor::TextSensor *bit_string_{nullptr};
+  sensor::Sensor *error_count_{nullptr};
 };
 
 } // namespace actron_air_keypad

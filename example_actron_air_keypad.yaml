@@ -245,9 +245,9 @@ sensor:
       name: "Setpoint Temperature"
       id: setpoint_temp
       icon: mdi:thermometer
-    bit_count:
-      name: "Bit Count"
-      id: bit_count
+    error_count:
+      name: "Error Count"
+      id: error_count
 
 # Text sensors from keypad status component
 text_sensor:
@@ -324,9 +324,9 @@ binary_sensor:
     timer:
       name: "Timer"
       id: timer
-    filter:
-      name: "Filter"
-      id: filter
+    inside:
+      name: "Inside"
+      id: inside
     zone1:
       name: "Zone Bedrooms"
       id: zone1
@@ -355,7 +355,3 @@ binary_sensor:
       name: "Zone 7"
       id: zone7
       icon: mdi:alert
-    # zone8:
-    #   name: "Zone 8"
-    #   id: zone8
-    #   icon: mdi:alert
