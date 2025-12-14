@@ -20,10 +20,10 @@ constexpr unsigned long START_CONDITION_US = 2700;
 constexpr unsigned long PULSE_THRESHOLD_US = 1000;
 // Maximum time to wait after last pulse before processing complete frame
 constexpr unsigned long FRAME_TIMEOUT_US = 40000;
-}  // namespace timing
+} // namespace timing
 
-// Protocol frame size (42 bits per frame)
-constexpr std::size_t NPULSE = 42;
+// Protocol frame size (40 bits per frame)
+constexpr std::size_t NPULSE = 40;
 
 // LED/segment bit indices in the protocol frame.
 // Status LEDs (modes, fan speeds, zones) and 7-segment display segments.
@@ -87,7 +87,8 @@ enum class LedIndex : std::size_t {
 };
 
 /// Decodes the pulse train protocol from an Actron Air keypad display.
-/// The protocol consists of 42-bit frames sent as timed pulses on a single wire.
+/// The protocol consists of 40-bit frames sent as timed pulses on a single
+/// wire.
 class LedProtocol {
 public:
   // Data access methods
