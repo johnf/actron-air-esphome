@@ -1,3 +1,9 @@
+## [0.1.2](https://github.com/johnf/actron-air-esphome/compare/v0.1.1...v0.1.2) (2025-12-19)
+
+### Bug Fixes
+
+* be consistent in zone naming ([7a38b1e](https://github.com/johnf/actron-air-esphome/commit/7a38b1e8fe5cabb56431b40378be47fccf80169e))
+
 ## [0.1.1](https://github.com/johnf/actron-air-esphome/compare/v0.1.0...v0.1.1) (2025-12-19)
 
 ### Bug Fixes
