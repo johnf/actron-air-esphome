@@ -22,7 +22,7 @@
   "scripts": {
     "start": "rollup -c rollup.config.dev.js --watch",
     "build": "pnpm run lint && rollup -c && pnpm run copy-card",
-    "copy-card": "mkdir -p custom_components/actron_air_esphome/frontend/; cp dist/actron-air-esphome-card.js custom_components/actron_air_esphome/frontend/",
+    "copy-card": "mkdir -p custom_components/actron_air_esphome/frontend/; mv dist/actron-air-esphome-card.js custom_components/actron_air_esphome/frontend/; rmdir dist",
     "deploy": "pnpm run build && scp dist/actron-air-esphome-card.js root@homeassistant.local:config/www/actron-air-esphome-card.js",
     "lint": "biome check src",
     "lint:fix": "biome check --write src",

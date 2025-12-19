@@ -35,7 +35,7 @@ class EntityNotFoundError(Exception):
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
     entity_prefix = data[CONF_ENTITY_PREFIX]
-    _LOGGER.warning('entity_prefix: %s', entity_prefix)
+    _LOGGER.warning("entity_prefix: %s", entity_prefix)
 
     # Check if the setpoint temperature sensor exists
     temp_entity = f"sensor.{entity_prefix}_{ENTITY_SUFFIXES['setpoint_temp']}"

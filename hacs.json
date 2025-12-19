@@ -1,5 +1,7 @@
 {
   "name": "Actron Air (ESPHome)",
   "render_readme": true,
+  "zip_release": true,
+  "filename": "actron_air_esphome.zip",
   "homeassistant": "2024.1.0"
 }
