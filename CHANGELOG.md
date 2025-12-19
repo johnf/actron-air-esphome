@@ -1,3 +1,9 @@
+## [0.1.1](https://github.com/johnf/actron-air-esphome/compare/v0.1.0...v0.1.1) (2025-12-19)
+
+### Bug Fixes
+
+* **ci:** use gh CLI to upload zip to existing release ([30d855a](https://github.com/johnf/actron-air-esphome/commit/30d855a07f12d564fcc0fdb51098d9927c0fe18c))
+
 ## [0.1.0](https://github.com/johnf/actron-air-esphome/compare/v0.0.14...v0.1.0) (2025-12-19)
 
 ### Features
