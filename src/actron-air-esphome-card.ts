@@ -356,6 +356,11 @@ export class ActronAirEsphomeCard extends LitElement {
   static styles = cardStyles;
 }
 
+// Explicit registration to ensure element is defined after minification
+if (!customElements.get('actron-air-esphome-card')) {
+  customElements.define('actron-air-esphome-card', ActronAirEsphomeCard);
+}
+
 declare global {
   interface HTMLElementTagNameMap {
     'actron-air-esphome-card': ActronAirEsphomeCard;
