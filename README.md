@@ -1,4 +1,4 @@
-# Actron Air ESP32 Keypad Component for ESPHome
+# Actron Air ESPHome Integration for Home Assistant
 
 An ESPHome external component for reading and decoding pulse trains from the
 Actron Air ESP32 keypad display, plus a Home Assistant integration with climate
@@ -57,7 +57,7 @@ The integration will automatically register the Lovelace card.
 external_components:
   - source:
       type: git
-      url: https://github.com/johnf/esphome_actron_air_keypad
+      url: https://github.com/johnf/actron-air-esphome
       ref: main
     components: [actron_air_esphome]
 ```
@@ -154,8 +154,10 @@ you to set up the integration.
 # Load the component
 external_components:
   - source:
-      type: local
-      path: components
+      type: git
+      url: https://github.com/johnf/actron-air-esphome
+      ref: main
+    components: [actron_air_esphome]
 
 # Enable auto-discovery in Home Assistant (optional)
 mdns:
@@ -291,7 +293,7 @@ There are 4 wires inside the wall unit that connect to the main supply:
 
 - Check ESPHome logs: `esphome logs your-device.yaml`
 - Validate config: `esphome config your-device.yaml`
-- Review example.yaml for complete setup
+- Review example_actron_air_keypad.yaml for complete setup
 
 ## License
 
