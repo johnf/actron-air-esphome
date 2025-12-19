@@ -359,34 +359,49 @@ class ActronAirClimate(ClimateEntity):
         """Set new target HVAC mode."""
         current_mode = self.hvac_mode
 
+        # Target is OFF - just turn it off
         if hvac_mode == HVACMode.OFF:
             if current_mode != HVACMode.OFF:
                 await self._set_switch(self._power_entity, False)
 
             return
 
-        # Turn on if currently off
+        # Target is FAN_ONLY - turn off power then press fan button
+        if hvac_mode == HVACMode.FAN_ONLY:
+            if current_mode != HVACMode.OFF:
+                await self._set_switch(self._power_entity, False)
+                await asyncio.sleep(BUTTON_PRESS_DELAY)
+
+            await self._press_button("fan_button")
+
+            return
+
+        # Target is a mode (cool/heat/auto)
+        # Turn on first if currently off
         if current_mode == HVACMode.OFF:
             await self._set_switch(self._power_entity, True)
             await asyncio.sleep(BUTTON_PRESS_DELAY)
 
-        # Map HVAC mode to binary sensor key
+        # Calculate presses needed using modular arithmetic
+        # Mode order: cool -> heat -> auto -> cool...
+        modes = [HVACMode.COOL, HVACMode.HEAT, HVACMode.AUTO]
         mode_sensors = {
             HVACMode.COOL: "cool",
             HVACMode.HEAT: "heat",
             HVACMode.AUTO: "auto_mode",
         }
 
-        target_sensor = mode_sensors.get(hvac_mode)
-        if target_sensor is None:
-            # Fan only mode - just ensure system is on
-            return
-
-        # Cycle mode button until desired mode is reached
-        max_presses = 5
-        for _ in range(max_presses):
-            if self._is_binary_sensor_on(target_sensor):
+        # Determine current mode from binary sensors
+        current_mode_idx = 0
+        for idx, mode in enumerate(modes):
+            if self._is_binary_sensor_on(mode_sensors[mode]):
+                current_mode_idx = idx
                 break
+
+        target_mode_idx = modes.index(hvac_mode) if hvac_mode in modes else 0
+        presses_needed = (target_mode_idx - current_mode_idx) % 3
+
+        for _ in range(presses_needed):
             await self._press_button("mode_button")
             await asyncio.sleep(BUTTON_PRESS_DELAY)
 
@@ -397,11 +412,26 @@ class ActronAirClimate(ClimateEntity):
         if current_fan == fan_mode:
             return
 
-        # Cycle fan button until desired mode is reached
-        max_presses = 10
-        for _ in range(max_presses):
-            if self.fan_mode == fan_mode:
-                break
+        # Fan mode order for cycling
+        fan_modes_order = [
+            FAN_MODE_HIGH,
+            FAN_MODE_MEDIUM,
+            FAN_MODE_LOW,
+            FAN_MODE_HIGH_CONT,
+            FAN_MODE_MEDIUM_CONT,
+            FAN_MODE_LOW_CONT,
+        ]
+
+        # Calculate presses needed using modular arithmetic
+        if current_fan in fan_modes_order and fan_mode in fan_modes_order:
+            current_idx = fan_modes_order.index(current_fan)
+            target_idx = fan_modes_order.index(fan_mode)
+            presses_needed = (target_idx - current_idx) % 6
+        else:
+            # Fallback: press up to 6 times
+            presses_needed = 6
+
+        for _ in range(presses_needed):
             await self._press_button("fan_button")
             await asyncio.sleep(BUTTON_PRESS_DELAY)
 
