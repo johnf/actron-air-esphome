@@ -29,14 +29,14 @@ to build the hardware.
 
 ### HACS (Recommended)
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnf&repository=actron_air_esphome&category=integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=johnf&repository=actron-air-esphome&category=integration)
 
 Or manually:
 
 1. Open HACS in Home Assistant
 2. Go to "Integrations" section
 3. Click the three dots menu and select "Custom repositories"
-4. Add `https://github.com/johnf/esphome_actron_air_keypad` with category "Integration"
+4. Add `https://github.com/johnf/actron-air-esphome` with category "Integration"
 5. Install "Actron Air ESPHome"
 6. Restart Home Assistant
 7. Go to Settings > Devices & Services > Add Integration
