@@ -140,7 +140,15 @@ The card expects entities with the following naming pattern based on your `entit
 ## ESPHome Configuration
 
 See [example_actron_air_keypad.yaml](example_actron_air_keypad.yaml) for complete configuration with all
-sensors and DAC controls.
+sensors, DAC controls, and mDNS auto-discovery.
+
+### Auto-Discovery
+
+The example includes an `mdns` service configuration that enables automatic discovery
+in Home Assistant. When configured, Home Assistant will detect the device and prompt
+you to set up the integration.
+
+### Basic Configuration
 
 ```yaml
 # Load the component
@@ -148,6 +156,16 @@ external_components:
   - source:
       type: local
       path: components
+
+# Enable auto-discovery in Home Assistant (optional)
+mdns:
+  services:
+    - service: "_actron_air"
+      protocol: "_tcp"
+      port: 6053
+      txt:
+        version: "1.0.0"
+        name: "${device_name}"
 
 # Configure the reader
 actron_air_esphome:

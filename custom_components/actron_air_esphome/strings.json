@@ -16,6 +16,20 @@
           "current_temperature_sensor": "An external temperature sensor to display current room temperature",
           "humidity_sensor": "An external humidity sensor to display current humidity"
         }
+      },
+      "discovery_confirm": {
+        "title": "Actron Air ESPHome Discovered",
+        "description": "An Actron Air ESPHome device ({name}) was discovered. Configure the additional options below.",
+        "data": {
+          "zone_count": "Number of Zones",
+          "current_temperature_sensor": "Current Temperature Sensor (optional)",
+          "humidity_sensor": "Humidity Sensor (optional)"
+        },
+        "data_description": {
+          "zone_count": "The number of zones configured in your Actron Air system (1-7)",
+          "current_temperature_sensor": "An external temperature sensor to display current room temperature",
+          "humidity_sensor": "An external humidity sensor to display current humidity"
+        }
       }
     },
     "error": {
