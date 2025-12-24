@@ -235,7 +235,7 @@ export class ActronAirEsphomeCard extends LitElement {
       const zoneName = this._config.zones?.[i]?.name || DEFAULT_ZONE_NAMES[i];
 
       zones.push(html`
-        <div class="zone zone${zoneNum}">
+        <div class="zone zone_${zoneNum}">
           <button
             class="zone-btn ${isActive ? 'active' : ''}"
             @click=${() => this._handleZoneToggle(zoneNum)}
