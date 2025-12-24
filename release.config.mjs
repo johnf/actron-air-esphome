@@ -22,7 +22,7 @@ export default {
       {
         prepareCmd:
           // biome-ignore lint/suspicious/noTemplateCurlyInString: Syntax for semantic-release
-          'node scripts/update-manifest-version.js ${nextRelease.version}',
+          'node scripts/update-manifest-version.mjs ${nextRelease.version}',
       },
     ],
     [
