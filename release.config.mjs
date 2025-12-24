@@ -18,9 +18,17 @@ export default {
     '@semantic-release/changelog',
     '@semantic-release/github',
     [
+      '@semantic-release/exec',
+      {
+        prepareCmd:
+          // biome-ignore lint/suspicious/noTemplateCurlyInString: Syntax for semantic-release
+          'node scripts/update-manifest-version.js ${nextRelease.version}',
+      },
+    ],
+    [
       '@semantic-release/git',
       {
-        assets: ['CHANGELOG.md', 'package.json'],
+        assets: ['CHANGELOG.md', 'package.json', 'manifest.json'],
       },
     ],
   ],
