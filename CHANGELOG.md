@@ -1,3 +1,10 @@
+## [0.1.4](https://github.com/johnf/actron-air-esphome/compare/v0.1.3...v0.1.4) (2025-12-24)
+
+### Bug Fixes
+
+* modify load path for card registration [#3](https://github.com/johnf/actron-air-esphome/issues/3) ([3b6d908](https://github.com/johnf/actron-air-esphome/commit/3b6d9087fcef42e9b121fa2ee745dae154fa78ca))
+* zone rendering location ([75965d7](https://github.com/johnf/actron-air-esphome/commit/75965d7d02e8ce8f1cc379385592dbc777271b5d))
+
 ## [0.1.3](https://github.com/johnf/actron-air-esphome/compare/v0.1.2...v0.1.3) (2025-12-24)
 
 ### Bug Fixes
