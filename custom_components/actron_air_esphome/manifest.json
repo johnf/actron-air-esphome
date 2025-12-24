@@ -2,6 +2,7 @@
   "domain": "actron_air_esphome",
   "name": "Actron Air ESPHome",
   "version": "1.0.0",
+  "integration_type": "device",
   "documentation": "https://github.com/johnf/esphome_actron_air_keypad",
   "issue_tracker": "https://github.com/johnf/esphome_actron_air_keypad/issues",
   "codeowners": ["@johnf"],
