@@ -19,7 +19,6 @@ PLATFORMS: list[Platform] = [Platform.CLIMATE]
 
 # Frontend card registration
 CARD_URL = f"/local/{DOMAIN}/actron-air-esphome-card.js"
-_FRONTEND_REGISTERED = False
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -46,10 +45,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def _async_register_frontend(hass: HomeAssistant) -> None:
     """Register the frontend card."""
-    global _FRONTEND_REGISTERED
-
-    if _FRONTEND_REGISTERED:
-        return
 
     # Path to bundled card
     card_path = Path(__file__).parent / "frontend" / "actron-air-esphome-card.js"
@@ -70,5 +65,4 @@ async def _async_register_frontend(hass: HomeAssistant) -> None:
     # Add as extra JS module so it loads on all dashboards
     add_extra_js_url(hass, CARD_URL)
 
-    _FRONTEND_REGISTERED = True
     _LOGGER.debug("Registered Actron Air ESPHome frontend card at %s", CARD_URL)
