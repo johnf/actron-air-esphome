@@ -221,6 +221,7 @@ substitutions:
   gpio_keypad_pin: "GPIO32"    # Pin for keypad signal
   gpio_i2c_sda: "GPIO21"       # I2C SDA pin
   gpio_i2c_scl: "GPIO22"       # I2C SCL pin
+  dac_output_address: "0x60"   # MCP4725 DAC I2C address
   # Voltage calibration (millivolts)
   voltage_zone_1: "725.0"
   voltage_zone_2: "663.0"

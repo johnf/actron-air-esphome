@@ -14,6 +14,9 @@ substitutions:
   gpio_i2c_sda: "GPIO21"
   gpio_i2c_scl: "GPIO22"
 
+  # DAC I2C address (default 0x60 for MCP4725)
+  dac_output_address: "0x60"
+
   # DAC voltage values for button presses (in millivolts)
   voltage_power: "5000.0"
   voltage_fan: "755.0"
@@ -59,6 +62,7 @@ i2c:
 output:
   - platform: mcp4725
     id: dac_output
+    address: ${dac_output_address}
 
 globals:
   - id: dac_value
