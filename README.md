@@ -340,6 +340,19 @@ There are 4 wires inside the wall unit that connect to the main supply:
 4. The frame is decoded to extract display and LED status
 5. Changes are published to Home Assistant sensors
 
+## Circuit Diagrams
+
+The circuit connects the ESP32 to the Actron Air keypad interface. Fritzing source
+files are available in the [fritzing/](fritzing/) directory.
+
+### Schematic
+
+![Circuit Schematic](images/circuit.png)
+
+### Veroboard Layout
+
+![Veroboard Layout](images/veroboard.png)
+
 ## Troubleshooting
 
 ### No data received
