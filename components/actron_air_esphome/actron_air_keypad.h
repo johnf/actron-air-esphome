@@ -155,7 +155,7 @@ private:
       binary_sensors_{};
 
   // Protocol state (main loop only)
-  uint64_t pulses_{0};  // Snapshot for sensor publishing
+  uint64_t pulses_{~0ULL};  // Snapshot for sensor publishing (sentinel: impossible frame value)
   bool has_new_data_{false};
 
   // ISR-only state (not shared)
