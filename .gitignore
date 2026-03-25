@@ -4,6 +4,9 @@ dist
 .venv
 .esphome
 custom_components/actron_air_esphome/frontend/actron-air-esphome-card.js
+__pycache__
+secrets.yaml
+.DS_Store
 
 # Home Assistant dev config (runtime files)
 ha-config/.storage/
