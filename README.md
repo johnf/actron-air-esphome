@@ -17,12 +17,15 @@ entity and custom Lovelace card.
 
 ## Hardware Requirements
 
-- ESP32 (ESP-IDF framework)
+- ESP32 (ESP-IDF framework, circuit below uses an ESP32-C3 Super Mini)
 - GPIO pin for pulse train input
 - Connection to air conditioner keypad display output
 - MCP4725 or MCP4726 DAC (I2C) for keypad button emulation
+- HW133 DC-DC converter to power the ESP from the keypad
 - BC548 NPN transistor
-- Resistors: 20kΩ, 4.7kΩ, 1.2kΩ (0.5W or higher)
+- Resistors: 22kΩ, 4.7kΩ, 1.0kΩ (0.5W or higher)
+- Diode: 1N5817
+- Capacitor: 1000µF (25V or higher)
 
 See the [forum thread](https://community.home-assistant.io/t/actron-aircon-esp32-controller-help/609062)
 for detailed build instructions and wiring diagrams.
