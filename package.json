@@ -29,28 +29,20 @@
     "remote": "vite build && ssh root@homeassistant.local 'rm -rf /config/custom_components/actron_air_esphome' && scp -r custom_components/* root@homeassistant.local:/config/custom_components/actron_air_esphome && scp dist/assets/index*.js root@homeassistant.local:/config/custom_components/actron_air_esphome/frontend/actron-air-esphome-card.js"
   },
   "dependencies": {
-    "custom-card-helpers": "^1.9.0",
-    "lit": "^3.3.2"
+    "custom-card-helpers": "^2.0.0",
+    "lit": "^3.3.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.6",
-    "@semantic-release/changelog": "^6.0.3",
+    "@biomejs/biome": "^2.5.14",
+    "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/exec": "^7.1.0",
-    "@semantic-release/git": "^10.0.1",
-    "@types/node": "^24.11.0",
-    "conventional-changelog-conventionalcommits": "^9.3.0",
-    "knip": "^5.85.0",
-    "semantic-release": "^25.0.3",
-    "typescript": "^5.3.0",
-    "vite": "^8.0.0-beta.13"
+    "@semantic-release/git": "^11.0.1",
+    "@types/node": "^26.6.2",
+    "conventional-changelog-conventionalcommits": "^10.4.0",
+    "knip": "^6.37.0",
+    "semantic-release": "^25.0.9",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
   },
-  "pnpm": {
-    "overrides": {
-      "vite": "^8.0.0-beta.13"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
-  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017"
+  "packageManager": "pnpm@12.5.1"
 }
