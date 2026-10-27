@@ -15,6 +15,7 @@ components/actron_air_esphome/
 ├── __init__.py           # ESPHome component registration and config schema
 ├── actron_air_keypad.h   # Main component class (protocol, timing, enums)
 ├── actron_air_keypad.cpp # Component implementation (ISR, decoding, publishing)
+├── frame_decoder.h       # Edge-to-frame decoder and frame confirmation (host-testable)
 ├── sensor.py             # Numeric sensor platform (setpoint_temp, error_count)
 ├── binary_sensor.py      # Binary sensor platform (18 sensors: modes, fans, zones)
 └── text_sensor.py        # Text sensor platform (bit_string for debugging)
@@ -54,9 +55,9 @@ GPIO Pin → ISR (handle_interrupt) → Main Loop → Publish to Sensors
 ```
 
 1. Hardware interrupt captures falling edges on GPIO pin
-2. ISR measures pulse timing to decode 0/1 bits into volatile buffer
-3. 40-bit frames are assembled and validated in `loop()`
-4. `ActronAirKeypad::loop()` publishes decoded data to ESPHome sensors
+2. ISR feeds edge times to `FrameDecoder` (frame_decoder.h), which hands complete
+   40-bit frames to the main loop through atomics
+3. `loop()` passes frames through `FrameConfirmer` and publishes confirmed changes
 
 ### Python-C++ Integration
 
@@ -66,11 +67,16 @@ GPIO Pin → ISR (handle_interrupt) → Main Loop → Publish to Sensors
 
 ### Protocol Details
 
+Bits are encoded in the gap between falling edges; each edge starts a ~62us low pulse.
+
 - **Frame size:** 40 bits
-- **Frame boundary:** >3.5ms reset pulse
-- **Start condition:** ~2.7ms pulse
-- **Bit threshold:** 1ms (shorter = 0, longer = 1)
-- **Update rate:** ~200ms between frames
+- **Bits:** ~490us gap = 1, ~1470us gap = 0 (threshold 1ms)
+- **Start gap:** ~2.9ms before the first bit, but only when the timer LED (bit 7) is off
+- **Frame boundary:** any gap >= 2.7ms (idle gap between frames is ~200ms, ~4 frames/s)
+- **Bounce:** ~1us bounces around edges; a rising-edge bounce adds a falling edge 62us
+  after the real one, so edges within 250us of the last accepted edge are ignored
+- **Confirmation:** a changed frame is published only after 2 identical frames in a
+  row, so blinking displays (timer setting, room temperature) hold the last steady state
 
 ### Key Classes
 
@@ -120,6 +126,9 @@ source .venv/bin/activate
 
 # Validate configuration without compiling
 .venv/bin/esphome config test_compile.yaml
+
+# Host tests for the frame decoder, replaying captured keypad waveforms
+scripts/test-decoder.sh
 ```
 
 ### Lovelace Card

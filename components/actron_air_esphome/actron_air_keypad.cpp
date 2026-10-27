@@ -1,5 +1,7 @@
 #include "actron_air_keypad.h"
 
+#include <cmath>
+
 namespace esphome {
 namespace actron_air_esphome {
 
@@ -106,7 +108,7 @@ float ActronAirKeypad::get_display_value() const {
   if (!std::isdigit(static_cast<unsigned char>(c1)) ||
       !std::isdigit(static_cast<unsigned char>(c2)) ||
       !std::isdigit(static_cast<unsigned char>(c3))) {
-    return -1.0f;
+    return NAN;
   }
 
   int value = (c1 - '0') * 100 + (c2 - '0') * 10 + (c3 - '0');
@@ -116,48 +118,25 @@ float ActronAirKeypad::get_display_value() const {
     display_value *= 0.1f;
   }
 
+  if (display_value < SETPOINT_MIN_C || display_value > SETPOINT_MAX_C) {
+    return NAN;
+  }
+
   return display_value;
 }
 
 void IRAM_ATTR ActronAirKeypad::handle_interrupt(ActronAirKeypad *arg) {
-  auto now_us = micros();
-  unsigned long delta_us = now_us - arg->last_intr_us_;
-  arg->last_intr_us_ = now_us;
-
-  if (delta_us > FRAME_BOUNDARY_US) {
-    arg->has_data_error_.store(false, std::memory_order_relaxed);
-
-    return;
-  }
-
-  if (delta_us >= START_CONDITION_US) {
-    // Reset staging buffer for new frame
-    arg->local_pulse_bits_ = 0;
-    arg->num_low_pulses_.store(0, std::memory_order_relaxed);
-
-    return;
-  }
-
-  uint8_t idx = arg->num_low_pulses_.load(std::memory_order_relaxed);
-  if (idx >= NPULSE) {
-    arg->has_data_error_.store(true, std::memory_order_relaxed);
+  switch (arg->decoder_.on_edge(micros())) {
+  case FrameDecoder::Result::FRAME:
+    arg->frame_bits_.store(arg->decoder_.frame(), std::memory_order_relaxed);
+    arg->frame_ready_.store(true, std::memory_order_release);
+    break;
+  case FrameDecoder::Result::ERROR:
     arg->error_count_.fetch_add(1, std::memory_order_relaxed);
-
-    return;
+    break;
+  case FrameDecoder::Result::NONE:
+    break;
   }
-
-  // Set bit in staging buffer if pulse is short (logic 1)
-  if (delta_us < PULSE_THRESHOLD_US) {
-    arg->local_pulse_bits_ |= (1ULL << idx);
-  }
-  arg->num_low_pulses_.store(idx + 1, std::memory_order_relaxed);
-
-  // Publish complete frame atomically when we have all bits
-  if (idx + 1 == NPULSE) {
-    arg->pulse_bits_.store(arg->local_pulse_bits_, std::memory_order_release);
-  }
-
-  arg->do_work_.store(true, std::memory_order_release);
 }
 
 void ActronAirKeypad::setup() {
@@ -177,40 +156,22 @@ void ActronAirKeypad::setup() {
 }
 
 void ActronAirKeypad::loop() {
-  unsigned long now_us = micros();
+  uint32_t errors = error_count_.load(std::memory_order_relaxed);
+  if (error_count_sensor_ && errors != published_error_count_) {
+    published_error_count_ = errors;
+    error_count_sensor_->publish_state(errors);
+  }
 
-  if (do_work_.load(std::memory_order_acquire)) {
-    do_work_.store(false, std::memory_order_relaxed);
-    last_work_us_ = now_us;
-
+  if (!frame_ready_.exchange(false, std::memory_order_acquire)) {
     return;
   }
 
-  unsigned long delta_us = now_us - last_work_us_;
-  uint8_t num_pulses = num_low_pulses_.load(std::memory_order_acquire);
-  if (delta_us > FRAME_TIMEOUT_US && num_pulses) {
-    if (num_pulses == NPULSE &&
-        !has_data_error_.load(std::memory_order_acquire)) {
-      // No InterruptLock needed - single atomic load
-      uint64_t bits = pulse_bits_.load(std::memory_order_acquire);
-      if (bits != pulses_) {
-        pulses_ = bits;
-        has_new_data_ = true;
-      }
-    } else {
-      ESP_LOGVV(TAG, "Only %u bits received (or data error: %u)", num_pulses,
-                has_data_error_.load(std::memory_order_relaxed) ? 1 : 0);
-    }
-
-    num_low_pulses_.store(0, std::memory_order_relaxed);
-    last_work_us_ = now_us;
-  }
-
-  if (!has_new_data_) {
+  uint64_t bits = frame_bits_.load(std::memory_order_relaxed);
+  if (!confirmer_.accept(bits)) {
     return;
   }
 
-  has_new_data_ = false;
+  pulses_ = bits;
   ESP_LOGD(TAG, "New data available");
 
   if (bit_string_) {
@@ -223,12 +184,10 @@ void ActronAirKeypad::loop() {
   }
 
   if (setpoint_temp_) {
-    setpoint_temp_->publish_state(get_display_value());
-  }
-
-  if (error_count_sensor_) {
-    error_count_sensor_->publish_state(
-        error_count_.load(std::memory_order_relaxed));
+    float setpoint = get_display_value();
+    if (!std::isnan(setpoint)) {
+      setpoint_temp_->publish_state(setpoint);
+    }
   }
 
   for (std::size_t i = 0; i < BINARY_SENSOR_COUNT; ++i) {

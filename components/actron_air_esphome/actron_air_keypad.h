@@ -12,17 +12,14 @@
 #include "esphome/core/gpio.h"
 #include "esphome/core/hal.h"
 
+#include "frame_decoder.h"
+
 namespace esphome {
 namespace actron_air_esphome {
 
-// Protocol timing constants (microseconds)
-constexpr unsigned long FRAME_BOUNDARY_US = 3500;
-constexpr unsigned long START_CONDITION_US = 2700;
-constexpr unsigned long PULSE_THRESHOLD_US = 1000;
-constexpr unsigned long FRAME_TIMEOUT_US = 40000;
-
-// Protocol frame size (40 bits per frame)
-constexpr std::size_t NPULSE = 40;
+// Displayed values outside this range (timer, lamp test) aren't a setpoint.
+constexpr float SETPOINT_MIN_C = 5.0f;
+constexpr float SETPOINT_MAX_C = 40.0f;
 
 // LED/segment bit indices in the protocol frame.
 // Status LEDs (modes, fan speeds, zones) and 7-segment display segments.
@@ -136,7 +133,6 @@ public:
 
 private:
   static void IRAM_ATTR handle_interrupt(ActronAirKeypad *arg);
-  void process_frame();
   float get_display_value() const;
   static char decode_digit(uint8_t segment_bits);
 
@@ -154,23 +150,18 @@ private:
   std::array<binary_sensor::BinarySensor *, BINARY_SENSOR_COUNT>
       binary_sensors_{};
 
-  // Protocol state (main loop only)
-  uint64_t pulses_{~0ULL};  // Snapshot for sensor publishing (sentinel: impossible frame value)
-  bool has_new_data_{false};
+  // Main loop only
+  FrameConfirmer confirmer_;
+  uint64_t pulses_{0};  // Last published frame
+  uint32_t published_error_count_{~0U};
 
-  // ISR-only state (not shared)
-  volatile unsigned long last_intr_us_{0};
-  uint64_t local_pulse_bits_{0};  // Staging buffer - only ISR writes
+  // ISR only
+  FrameDecoder decoder_;
 
-  // Loop-only state (not shared)
-  unsigned long last_work_us_{0};
-
-  // Atomic shared state (ISR writes, loop reads)
-  std::atomic<uint64_t> pulse_bits_{0};     // Bitmap: bit N = pulse N value
-  std::atomic<uint8_t> num_low_pulses_{0};
+  // ISR writes, loop reads
+  std::atomic<uint64_t> frame_bits_{0};
+  std::atomic<bool> frame_ready_{false};
   std::atomic<uint32_t> error_count_{0};
-  std::atomic<bool> do_work_{false};
-  std::atomic<bool> has_data_error_{false};
 };
 
 } // namespace actron_air_esphome

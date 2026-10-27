@@ -338,9 +338,11 @@ There are 4 wires inside the wall unit that connect to the main supply:
 
 1. An interrupt handler captures falling edges on the ADC pin
 2. Timing between edges determines if the pulse represents a '0' or '1'
-3. 40 bits are collected to form a complete frame
-4. The frame is decoded to extract display and LED status
-5. Changes are published to Home Assistant sensors
+3. Any gap of 2.7ms or more starts a new frame; 40 bits make a complete frame
+4. Edges within 250µs of the previous one are line bounce and are ignored
+5. A changed frame must arrive twice in a row before it is used
+6. The frame is decoded to extract display and LED status
+7. Changes are published to Home Assistant sensors
 
 ## Circuit Diagrams
 
