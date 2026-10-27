@@ -65,9 +65,23 @@ output:
     id: dac_output
     address: ${dac_output_address}
 
+# Queued so presses never overlap: each holds its key voltage for 250ms
+script:
+  - id: press_key
+    mode: queued
+    max_runs: 20
+    parameters:
+      millivolts: float
+    then:
+      - logger.log:
+          format: "Pressing key at %.1f mV"
+          args: [millivolts]
+      - lambda: id(dac_output).set_level(millivolts / 5000.0);
+      - delay: 250ms
+      - lambda: id(dac_output).set_level(0.0);
+      - delay: 250ms
+
 globals:
-  - id: dac_value
-    type: double
   - id: prev_fan
     type: std::string
     initial_value: '"Unset"'
@@ -89,74 +103,60 @@ number:
 # Button controls
 button:
   - platform: template
-    name: "Press"
-    id: press_button
-    internal: true
-    icon: mdi:power
-    on_press:
-      - logger.log: Button Pressed
-      - lambda: |-
-          id(dac_output).set_level((id(dac_value) / 5000.0));
-      - delay: 250ms
-      - lambda: |-
-          id(dac_output).set_level((0.0 / 5000.0));
-      - delay: 250ms
-
-  - platform: template
     name: "Fan"
     icon: mdi:fan
     on_press:
-      - lambda: |-
-          id(dac_value)=${voltage_fan};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_fan}
 
   - platform: template
     name: "Mode"
     icon: mdi:air-conditioner
     on_press:
-      - lambda: |-
-          id(dac_value)=${voltage_mode};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_mode}
 
   - platform: template
     name: "Temp Up"
     icon: mdi:thermometer-plus
     on_press:
-      - lambda: |-
-          id(dac_value)=${voltage_temp_up};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_temp_up}
 
   - platform: template
     name: "Temp Down"
     icon: mdi:thermometer-minus
     on_press:
-      - lambda: |-
-          id(dac_value)=${voltage_temp_down};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_temp_down}
 
   - platform: template
     name: "Timer"
     icon: mdi:timer
     on_press:
-      - lambda: |-
-          id(dac_value)=${voltage_timer};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_timer}
 
   - platform: template
     name: "Timer Up"
     icon: mdi:timer-plus
     on_press:
-      - lambda: |-
-          id(dac_value)=${voltage_timer_up};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_timer_up}
 
   - platform: template
     name: "Timer Down"
     icon: mdi:timer-minus
     on_press:
-      - lambda: |-
-          id(dac_value)=${voltage_timer_down};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_timer_down}
 
 # Power and zone control switches
 switch:
@@ -165,13 +165,13 @@ switch:
     id: power
     name: "Power"
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_power};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_power}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_power};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_power}
     lambda: |-
       return (id(cool).state or id(auto_mode).state or id(heat).state or id(fan_cont).state or id(fan_high).state or id(fan_mid).state or id(fan_low).state);
 
@@ -180,13 +180,13 @@ switch:
     name: "Zone 1"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_1};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_1}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_1};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_1}
     lambda: return id(zone_1).state;
 
   - platform: template
@@ -194,13 +194,13 @@ switch:
     name: "Zone 2"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_2};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_2}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_2};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_2}
     lambda: return id(zone_2).state;
 
   - platform: template
@@ -208,13 +208,13 @@ switch:
     name: "Zone 3"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_3};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_3}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_3};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_3}
     lambda: return id(zone_3).state;
 
   - platform: template
@@ -222,13 +222,13 @@ switch:
     name: "Zone 4"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_4};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_4}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_4};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_4}
     lambda: return id(zone_4).state;
 
   - platform: template
@@ -236,13 +236,13 @@ switch:
     name: "Zone 5"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_5};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_5}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_5};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_5}
     lambda: return id(zone_5).state;
 
   - platform: template
@@ -250,13 +250,13 @@ switch:
     name: "Zone 6"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_6};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_6}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_6};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_6}
     lambda: return id(zone_6).state;
 
   - platform: template
@@ -264,13 +264,13 @@ switch:
     name: "Zone 7"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_7};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_7}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_7};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_7}
     lambda: return id(zone_7).state;
 
   - platform: template
@@ -278,13 +278,13 @@ switch:
     name: "Zone 8"
     icon: mdi:air-conditioner
     turn_on_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_8};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_8}
     turn_off_action:
-      - lambda: |-
-          id(dac_value)=${voltage_zone_8};
-          id(press_button).press();
+      - script.execute:
+          id: press_key
+          millivolts: ${voltage_zone_8}
     lambda: return id(zone_8).state;
 
 external_components:
